@@ -1,11 +1,18 @@
 import React, {Component} from 'react';
-import  { connect } from "react-redux";
-import {saveCountryToLocalStorage, getCountryFromLocalStorage, getCountryISOCode} from "../Helpers";
+import {connect} from "react-redux";
+import {
+  saveCountryToLocalStorage,
+  savePollutedCitiesToLocalStorage,
+  getCountryFromLocalStorage,
+  getCountryISOCode
+} from "../Helpers";
 import Header from "../Header/Header";
-import AutocompleteInput from "../AutocompleteInput";
+import AutocompleteInput from "../AutocompleteInput/AutocompleteInput";
 import ControlledExpansionPanels from "../../containers/ControlledExpansionPanels/ControlledExpansionPanels";
 import Layout from "../Layout/Layout";
 import {fetchPollutedCities} from "../../store/actions/PollutedCitiesAction";
+import Loader from "../Loader/Loader";
+import {createArrayOfTenUniquePollutedCities} from "../Helpers"
 
 class MainView extends Component {
   constructor(props) {
@@ -33,22 +40,27 @@ class MainView extends Component {
 
 
   fetchData = (country) => {
-    const { fetchPollutedCities } = this.props;
+    const {fetchPollutedCities} = this.props;
     const countryISOCode = getCountryISOCode(country);
 
+    fetchPollutedCities({countryISOCode}, (pollutedCities) => {
 
-    fetchPollutedCities({countryISOCode})
+      console.log(pollutedCities);
+
+      //const uniquePollutedCities = createArrayOfTenUniquePollutedCities(pollutedCities);
+
+    //  console.log(uniquePollutedCities);
 
 
+      savePollutedCitiesToLocalStorage(pollutedCities);
+    })
 
-    //do pierwszego
-    //https://api.openaq.org/v1/measurements?country=PL&parameter=pm25&order_by[]=value&sort[]=desc&limit=10
-    // do drugiego fetcha
-    //https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=Krakow%20city&format=jsonfm
+
   };
 
 
   render() {
+    const {loadingCities} = this.props;
     return (
       <Layout>
         <Header/>
@@ -56,10 +68,16 @@ class MainView extends Component {
           getSelectedCity={this.getSelectedCountry}
           selectedItem={this.state.selectedCountry}
         />
-        <ControlledExpansionPanels/>
+        {loadingCities ? <Loader size={150}/> : <ControlledExpansionPanels />}
       </Layout>
     );
   }
 }
 
-export default connect(null, {fetchPollutedCities})(MainView);
+const mapStateToProps = state => {
+  return {
+    loadingCities: state.PollutedCitiesReducer.loading
+  }
+};
+
+export default connect(mapStateToProps, {fetchPollutedCities})(MainView);

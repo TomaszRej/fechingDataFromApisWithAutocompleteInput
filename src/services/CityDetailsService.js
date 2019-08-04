@@ -1,12 +1,12 @@
 import axios from "axios";
+import jsonpAdapter from 'axios-jsonp';
 
-
-const fetchPollutedCities = ({countryISOCode}) => {
-
+const fetchCityDetails = ({city}) => {
   return new Promise((resolve, reject) => {
     axios({
       method: "get",
-      url: `https://api.openaq.org/v1/measurements?country=${countryISOCode}&parameter=pm25&order_by[]=value&sort[]=desc&limit=100`,
+      url: `http://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${city}%20city&format=json`,
+      adapter: jsonpAdapter,
     }).then((response) => {
       resolve(response.data);
     }).catch((e) => {
@@ -16,5 +16,5 @@ const fetchPollutedCities = ({countryISOCode}) => {
 };
 
 export default {
-  fetchPollutedCities,
+  fetchCityDetails,
 };
