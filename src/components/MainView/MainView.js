@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect, Component} from 'react';
 import {connect} from "react-redux";
 import {
   saveCountryToLocalStorage,
@@ -13,71 +13,129 @@ import Layout from "../Layout/Layout";
 import {fetchPollutedCities} from "../../store/actions/PollutedCitiesAction";
 import Loader from "../Loader/Loader";
 import {createArrayOfTenUniquePollutedCities} from "../Helpers"
+import {useSelector, useDispatch} from "react-redux";
 
-class MainView extends Component {
-  constructor(props) {
-    super(props);
+function MainView() {
+  const loadingCities = useSelector(state => state.PollutedCitiesReducer.loading);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const dispatch = useDispatch();
 
-    this.state = {
-      selectedCountry: "",
-    }
-  }
+  useEffect(() => {
+    setSelectedCountry(getCountryFromLocalStorage());
+  }, [selectedCountry]);
 
-  componentDidMount() {
-    this.setState({
-      selectedCountry: getCountryFromLocalStorage()
-    })
-  }
+   const  getSelectedCountry = country => {
 
-  getSelectedCountry = country => {
-    this.setState({
-      selectedCountry: country
-    }, () => {
-      saveCountryToLocalStorage(this.state.selectedCountry);
-      this.fetchData(this.state.selectedCountry);
-    })
+     setSelectedCountry(country);
+     saveCountryToLocalStorage(country);
+
+     fetchData(country)
+    // this.setState({
+    //   selectedCountry: country
+    // }, () => {
+    //   saveCountryToLocalStorage(this.state.selectedCountry);
+    //   this.fetchData(this.state.selectedCountry);
+    // })
   };
 
-
-  fetchData = (country) => {
-    const {fetchPollutedCities} = this.props;
+   const    fetchData = (country) => {
+    // const {fetchPollutedCities} = this.props;
     const countryISOCode = getCountryISOCode(country);
 
-    fetchPollutedCities({countryISOCode}, (pollutedCities) => {
+    dispatch(fetchPollutedCities({countryISOCode}, (pollutedCities) => {
 
       console.log(pollutedCities);
 
-      //const uniquePollutedCities = createArrayOfTenUniquePollutedCities(pollutedCities);
+      const uniquePollutedCities = createArrayOfTenUniquePollutedCities(pollutedCities);
 
-    //  console.log(uniquePollutedCities);
+      console.log(uniquePollutedCities, "unikalne");
 
 
       savePollutedCitiesToLocalStorage(pollutedCities);
-    })
-
+    }))
 
   };
 
+  return (
+    <Layout>
+      <Header/>
+      <AutocompleteInput
+        getSelectedCity={getSelectedCountry}
+        selectedItem={selectedCountry}
+      />
+      {loadingCities ? <Loader size={150}/> : <ControlledExpansionPanels/>}
+    </Layout>
+  );
 
-  render() {
-    const {loadingCities} = this.props;
-    return (
-      <Layout>
-        <Header/>
-        <AutocompleteInput
-          getSelectedCity={this.getSelectedCountry}
-          selectedItem={this.state.selectedCountry}
-        />
-        {loadingCities ? <Loader size={150}/> : <ControlledExpansionPanels />}
-      </Layout>
-    );
-  }
 }
 
-const mapStateToProps = state => {
-  return {
-    loadingCities: state.PollutedCitiesReducer.loading
-  }
-};
+export default MainView;
 
-export default connect(mapStateToProps, {fetchPollutedCities})(MainView);
+
+// class MainView extends Component {
+//   constructor(props) {
+//     super(props);
+//
+//     this.state = {
+//       selectedCountry: "",
+//     }
+//   }
+//
+//   componentDidMount() {
+//     this.setState({
+//       selectedCountry: getCountryFromLocalStorage()
+//     })
+//   }
+//
+//   getSelectedCountry = country => {
+//     this.setState({
+//       selectedCountry: country
+//     }, () => {
+//       saveCountryToLocalStorage(this.state.selectedCountry);
+//       this.fetchData(this.state.selectedCountry);
+//     })
+//   };
+//
+//
+//   fetchData = (country) => {
+//     const {fetchPollutedCities} = this.props;
+//     const countryISOCode = getCountryISOCode(country);
+//
+//     fetchPollutedCities({countryISOCode}, (pollutedCities) => {
+//
+//       console.log(pollutedCities);
+//
+//       const uniquePollutedCities = createArrayOfTenUniquePollutedCities(pollutedCities);
+//
+//       console.log(uniquePollutedCities, "unikalne");
+//
+//
+//       savePollutedCitiesToLocalStorage(pollutedCities);
+//     })
+//
+//
+//   };
+//
+//
+//   render() {
+//     const {loadingCities} = this.props;
+//     return (
+//       <Layout>
+//         <Header/>
+//         <AutocompleteInput
+//           getSelectedCity={this.getSelectedCountry}
+//           selectedItem={this.state.selectedCountry}
+//         />
+//         {loadingCities ? <Loader size={150}/> : <ControlledExpansionPanels />}
+//       </Layout>
+//     );
+//   }
+// }
+//
+// const mapStateToProps = state => {
+//   return {
+//     loadingCities: state.PollutedCitiesReducer.loading
+//   }
+// };
+//
+// export default connect(mapStateToProps, {fetchPollutedCities})(MainView);
