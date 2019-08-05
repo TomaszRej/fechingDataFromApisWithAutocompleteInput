@@ -6,17 +6,12 @@ import {
 
 import PollutedCitiesService from "../../services/PollutedCitiesService";
 
-export const fetchPollutedCities = ({countryISOCode}, callback) => {
+export const fetchPollutedCities = ({countryISOCode}, success) => {
   return async (dispatch) => {
-
     dispatch({type: FETCH_POLLUTED_CITIES});
-
     PollutedCitiesService.fetchPollutedCities({countryISOCode}).then((response) => {
-
       dispatch({type: FETCH_POLLUTED_CITIES_SUCCESS, payload: response.results});
-
-      callback(response.results)
-
+      success(response.results)
     }).catch((err) => {
       dispatch({type: FETCH_POLLUTED_CITIES_FAILED});
     });

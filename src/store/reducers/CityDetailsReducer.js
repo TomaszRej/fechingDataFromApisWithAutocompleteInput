@@ -12,7 +12,6 @@ const initialState = {
 
 const PollutedCitiesReducer = (state = initialState, action) => {
   switch (action.type) {
-
     case FETCH_CITY_DETAILS:
       return {
         ...state,

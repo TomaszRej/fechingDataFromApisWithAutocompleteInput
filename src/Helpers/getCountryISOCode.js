@@ -1,4 +1,4 @@
-import {suggestions as countries} from '../../const';
+import {suggestions as countries} from '../const';
 
 export function getCountryISOCode(selectedCountry) {
   for (const country of countries) {

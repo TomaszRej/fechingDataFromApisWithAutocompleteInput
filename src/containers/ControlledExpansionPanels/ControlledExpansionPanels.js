@@ -12,23 +12,21 @@ function ControlledExpansionPanels() {
 
   useEffect(() => {
     const pollutedCitiesFromLocalStorage = localStorage.getItem("pollutedCities");
-    if (pollutedCitiesFromLocalStorage) {
-      setPollutedCities(JSON.parse(pollutedCitiesFromLocalStorage));
-    }
-  }, pollutedCities);
+    setPollutedCities(JSON.parse(pollutedCitiesFromLocalStorage));
+  }, [pollutedCities]);
 
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-
   return (
     <Grid item className={classes.root}>
       {pollutedCities && pollutedCities.map((pollutedCity, index) => {
+        const id = pollutedCity.city + index;
         return (
           <ControlledExpansionPanelItem
-            //key={pollutedCity.city}
+            key={id}
             expanded={expanded}
             handleChange={handleChange}
             city={pollutedCity.city}

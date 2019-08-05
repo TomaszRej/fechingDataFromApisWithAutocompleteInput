@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import deburr from 'lodash/deburr';
 import Downshift from 'downshift';
-import {makeStyles} from '@material-ui/core/styles/index';
 import TextField from '@material-ui/core/TextField/index';
 import Paper from '@material-ui/core/Paper/index';
 import MenuItem from '@material-ui/core/MenuItem/index';
@@ -11,12 +10,8 @@ import {suggestions} from "../../const";
 import  { useStyles} from "./AutocompleteInputStyle";
 
 
-
-
-
 export default function AutocompleteInput({getSelectedCity, selectedItem}) {
   const classes = useStyles();
-
 
   const onChange = (city) => {
     if (typeof getSelectedCity === "function") {
@@ -25,7 +20,7 @@ export default function AutocompleteInput({getSelectedCity, selectedItem}) {
   };
 
   return (
-    <Grid item md="6" lg="6">
+    <Grid item md={6} lg={6}>
       <Downshift
         onChange={onChange}
         selectedItem={selectedItem}
@@ -83,36 +78,7 @@ export default function AutocompleteInput({getSelectedCity, selectedItem}) {
 }
 
 
-// const useStyles = makeStyles(theme => ({
-//   root: {
-//     flexGrow: 1,
-//     height: 250,
-//   },
-//   container: {
-//     flexGrow: 1,
-//     position: 'relative',
-//   },
-//   paper: {
-//     position: 'absolute',
-//     zIndex: 1,
-//     marginTop: theme.spacing(1),
-//     left: 0,
-//     right: 0,
-//   },
-//   chip: {
-//     margin: theme.spacing(0.5, 0.25),
-//   },
-//   inputRoot: {
-//     flexWrap: 'wrap',
-//   },
-//   inputInput: {
-//     width: 'auto',
-//     flexGrow: 1,
-//   },
-//   divider: {
-//     height: theme.spacing(2),
-//   },
-// }));
+
 
 
 
@@ -141,6 +107,7 @@ renderInput.propTypes = {
   classes: PropTypes.object.isRequired,
   InputProps: PropTypes.object,
 };
+
 
 function renderSuggestion(suggestionProps) {
   const {suggestion, index, itemProps, highlightedIndex, selectedItem} = suggestionProps;
